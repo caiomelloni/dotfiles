@@ -53,7 +53,7 @@ endfunction
 function UpdateDotfiles()
 	let vimrcPath = "~/" . system("readlink " . $MYVIMRC)
 	let repoPath = substitute(vimrcPath, "/.vimrc", "", "")
-	let cdToRepo = "silent !cd " . repoPath
+	let cdToRepo = "!cd " . repoPath
 	let gitAddRepo = "git add " . vimrcPath
 	let gitCommitRepo = "git commit -m \"dotfiles automatically updated by vimscript\""
 	let gitPushRepo = "git push origin main"
