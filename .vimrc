@@ -20,7 +20,7 @@ nnoremap <leader>o o<esc>
 nnoremap <leader>cc :call ToogleCenterCursor()<cr>
 
 " COMMANDS
-command! SyncDotFiles :call UpdateDotfiles()<cr>
+command! SyncDotFiles :call UpdateDotfiles()
 
 
 " STATUS LINE
