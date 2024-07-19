@@ -61,7 +61,7 @@ function UpdateDotfiles()
 	for command in gitCommands
 		execute RemoveNullCharacters(cdToRepo . '&& ' . command)
 	endfor
-	echom "DotFiles synced"
+	echo "DotFiles synced"
 endfunction 
 
 
