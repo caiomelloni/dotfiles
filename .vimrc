@@ -53,7 +53,7 @@ endfunction
 function UpdateDotfiles()
 	let vimrcPath = "~/" . system("readlink " . $MYVIMRC)
 	let repoPath = substitute(vimrcPath, "/.vimrc", "", "")
-	let cdToRepo = "!cd " . repoPath
+	let cdToRepo = "silent !cd " . repoPath
 	let gitAddRepo = "git add " . vimrcPath
 	let gitCommitRepo = "git commit -m \"dotfiles automatically updated by vimscript\""
 	let gitPushRepo = "git push origin main"
@@ -61,6 +61,7 @@ function UpdateDotfiles()
 	for command in gitCommands
 		execute RemoveNullCharacters(cdToRepo . '&& ' . command)
 	endfor
+	echom "DotFiles synced"
 endfunction 
 
 
