@@ -19,6 +19,9 @@ nnoremap <leader>O O<esc>
 nnoremap <leader>o o<esc>
 nnoremap <leader>cc :call ToogleCenterCursor()<cr>
 
+" COMMANDS
+command! SyncDotFiles :call UpdateDotfiles()<cr>
+
 
 " STATUS LINE
 set laststatus=2
