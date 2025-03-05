@@ -1,66 +1,92 @@
-let mapleader =" "
-let maplocalleader ="\\"
-
-syntax on
-
-set cursorline
+" **Basic settings** {{{
+let mapleader = " "
+let maplocalleader = "\\"
 set number
 set relativenumber
-set number
-set numberwidth=4
-set scrolloff=0
-set incsearch
+set shiftround
+set wrap
+" }}}
 
-" USEFUL MAPPINGS
-nnoremap <leader>ev :tabedit $MYVIMRC<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
-nnoremap <leader>hl :set hlsearch!<cr>
-nnoremap <leader>O O<esc>
-nnoremap <leader>o o<esc>
-nnoremap <leader>cc :call ToogleCenterCursor()<cr>
-
-" COMMANDS
-command! SyncDotFiles :call UpdateDotfiles()
-
-
-" STATUS LINE
+" **Status line** {{{
 set laststatus=2
-set statusline=%f " local file path
-set statusline+=%=%y " filetype
+set statusline=%f
+set statusline+=%= 
+set statusline+=FileType:\ %y
+" }}}
 
+" **avoid tab in my code, and set the width of indentation to 2 spaces** {{{
+set shiftwidth=2
+inoremap <Tab> <space><space>
+set softtabstop=2 expandtab
+" }}}
 
-syntax enable
-set background=dark
+" **Custom motions** {{{
+" move lines downward and upward
+nnoremap - :m +1<CR>
+nnoremap + :m -2<CR>
 
-" AUTOCOMMANDS
+" uppercase the inserted word
+inoremap <c-u> <esc>bviwUea
 
-" AUX FUNCTIONS
-function RemoveNullCharacters(string)
-	return join(split(a:string, "\x0"))
-endfunction
+" source vimrc
+nnoremap <leader>sv :source $MYVIMRC<CR>
 
-" FUNCTIONS
-function ToogleCenterCursor()
-	if &scrolloff == 0
-		let &scrolloff = 9999
-		echo "cursor centralized"
-	else
-		let &scrolloff = 0
-		echo "cursor decentralized"
-	endif
-endfunction
+" edit vimrc
+nnoremap <leader>ev :tabedit $MYVIMRC<CR>
 
-function UpdateDotfiles()
-	let vimrcPath = "~/" . system("readlink " . $MYVIMRC)
-	let repoPath = substitute(vimrcPath, "/.vimrc", "", "")
-	let cdToRepo = "!cd " . repoPath
-	let gitAddRepo = "git add " . vimrcPath
-	let gitCommitRepo = "git commit -m \"dotfiles automatically updated by vimscript\""
-	let gitPushRepo = "git push origin main"
-	let gitCommands = [gitAddRepo, gitCommitRepo, gitPushRepo]
-	for command in gitCommands
-		execute RemoveNullCharacters(cdToRepo . '&& ' . command)
-	endfor
-endfunction 
+" write and quit
+nnoremap <leader>wq :wq<cr>
+nnoremap <leader>q :q<cr>
+nnoremap <leader>Q :q!<cr>
+nnoremap <leader>w :w<cr>
+
+" surround by quotes
+nnoremap <leader>" bi"<esc>ea"<esc>
+nnoremap <leader>' bi'<esc>ea'<esc>
+vnoremap <leader>" <esc>`<i"<esc>`>a"<esc>`<v`>
+vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>`<v`>
+
+" }}}
+
+" **Abbreviations** {{{
+iabbrev ssig -- <cr>Caio Melloni<cr>caiomelloni.contato@gmail.com<cr>
+cabbrev ec echo
+" }}}
+
+" **Disables bad habbits** {{{
+nnoremap <Up> <nop>
+nnoremap <Down> <nop>
+nnoremap <Left> <nop>
+nnoremap <Right> <nop>
+cabbrev w USE NORMAL MODE SHORTCUT TO SAVE
+cabbrev wq USE NORMAL MODE SHORTCUT TO SAVE AND EXIT
+cabbrev q USE NORMAL MODE SHORTCUT TO EXIT
+" }}}
+
+" **Autocmds** {{{
+augroup comments
+  autocmd!
+  autocmd FileType python :nnoremap <buffer> <localleader>c v<esc>I#<esc>`>
+  autocmd FileType c :nnoremap <buffer> <localleader>c v<esc>I//<esc>`>
+augroup END
+
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
+
+" **Operator pendings** {{{
+onoremap n( :<c-u>normal! f(vi(<cr>
+onoremap n) :<c-u>normal! f)vi)<cr>
+onoremap p( :<c-u>normal! F(vi(<cr>
+onoremap p) :<c-u>normal! F)vi)<cr>
+onoremap n( :<c-u>normal! f(vi(<cr>
+" }}}
+
+" for filetype detection. I have no ideia how it works
+filetype off
+filetype plugin indent on
+" ====================================================
 
 
