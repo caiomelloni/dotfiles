@@ -7,6 +7,94 @@ set shiftround
 set wrap
 " }}}
 
+if $VIM_PATH != ""
+        let $PATH = $VIM_PATH
+endif
+
+" **Dowload Plug if it's not installed and dowload the pluggins** {{{
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+" }}}
+" **Plugins** {{{
+filetype plugin on
+call plug#begin()
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'github/copilot.vim'
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'google/vim-maktaba'
+Plug 'bazelbuild/vim-bazel'
+call plug#end()
+colorscheme dracula
+" }}}
+
+if executable('pylsp')
+    " pip install python-lsp-server
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pylsp',
+        \ 'cmd': {server_info->['pylsp']},
+        \ 'allowlist': ['python'],
+        \ })
+endif
+
+if executable('gopls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'gopls',
+        \ 'cmd': {server_info->['gopls']},
+        \ 'allowlist': ['go'],
+        \ })
+endif
+
+
+" **Auto complete** {{{
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+
+" allow modifying the completeopt variable, or it will
+" be overridden all the time
+let g:asyncomplete_auto_completeopt = 0
+
+set completeopt=menuone,noinsert,noselect,preview
+
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+" }}}
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> <localleader>gd <plug>(lsp-definition)
+    nmap <buffer> <localleader>gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> <localleader>gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> <localleader>gr <plug>(lsp-references)
+    nmap <buffer> <localleader>gi <plug>(lsp-implementation)
+    nmap <buffer> <localleader>gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> <localleader>[g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> <localleader>]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> <localleader>K <plug>(lsp-hover)
+    nnoremap <buffer> <localleader><expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <localleader><expr><c-d> lsp#scroll(-4)
+
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+
 " **Status line** {{{
 set laststatus=2
 set statusline=%f
@@ -88,5 +176,3 @@ onoremap n( :<c-u>normal! f(vi(<cr>
 filetype off
 filetype plugin indent on
 " ====================================================
-
-
